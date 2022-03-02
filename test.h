@@ -5,9 +5,9 @@
 
 
 #if defined(__GNUC__)
-#define S2iEXPORT
+#define EXPORT
 #else
-#define S2iEXPORT __declspec(dllexport)
+#define EXPORT __declspec(dllexport)
 #endif
 
 
@@ -15,11 +15,11 @@
 extern "C" {
 #endif
 
-S2iEXPORT int add(int a, int b);
+EXPORT int add(int a, int b);
     
     
 #if defined(c_plusplus) || defined(__cplusplus)
 }
 #endif
 
-#endif /* s2icore_decode_h */
+#endif /* test_h */

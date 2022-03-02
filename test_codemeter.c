@@ -8,7 +8,8 @@
 #define FIRM_CODE 10
 
 void ErrorHandler(char *line, int ExitCode, HCMSysEntry hcmEntry);
-void dg_set_codemeter_led(int state) {
+
+void set_codemeter_led(int state) {
     unsigned int iFirmCode, iProductCode, res, flags;
     HCMSysEntry hcmEntry;
     CMACCESS cmAcc;

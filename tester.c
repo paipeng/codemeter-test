@@ -1,7 +1,12 @@
-#include "test.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "test.h"
+#include "test_codemeter.h"
 
+
+void test_codemeter() {
+    set_codemeter_led(LED_RED);
+}
 
 int main(int argc, char** argv) {
     int a, b;
