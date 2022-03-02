@@ -9,6 +9,38 @@
 
 void ErrorHandler(char *line, int ExitCode, HCMSysEntry hcmEntry);
 
+
+
+HCMSysEntry openCMSysEntry() {
+    HCMSysEntry hcmse;
+    CMACCESS2 cmAcc;
+    memset(&cmAcc, 0, sizeof(CMACCESS2));
+    cmAcc.mflCtrl |= CM_ACCESS_NOUSERLIMIT;
+    cmAcc.mulFirmCode = FIRM_CODE;
+    hcmse = CmAccess2(CM_ACCESS_LOCAL, &cmAcc);
+    return hcmse;
+}
+
+unsigned int get_codemeter_sn() {
+    HCMSysEntry hcmse = openCMSysEntry();
+    CMBOXINFO cmBoxInfo;
+    int res;
+    char sn[11];
+
+    memset(&cmBoxInfo, 0, sizeof(CMBOXINFO));
+    res = CmGetInfo(hcmse, CM_GEI_BOXINFO, &cmBoxInfo, sizeof(cmBoxInfo));
+    
+    if(0 != res) {
+        if (cmBoxInfo.musBoxMask < 10) {
+            snprintf(sn, sizeof(char)*11, "%d%d", cmBoxInfo.musBoxMask, cmBoxInfo.mulSerialNumber);
+            return atoi(sn);
+        } else {
+            return cmBoxInfo.mulSerialNumber;
+        }
+    }
+    return 0;
+}
+
 void set_codemeter_led(int state) {
     unsigned int iFirmCode, iProductCode, res, flags;
     HCMSysEntry hcmEntry;

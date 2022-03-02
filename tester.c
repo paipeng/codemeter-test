@@ -6,6 +6,8 @@
 
 void test_codemeter(int state) {
     set_codemeter_led(state);
+    unsigned int sn = get_codemeter_sn();
+    printf("codemeter sn: %d\n", sn);
 }
 
 int main(int argc, char** argv) {

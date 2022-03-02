@@ -19,6 +19,7 @@
 extern "C" {
 #endif
 
+unsigned int get_codemeter_sn();
 EXPORT void set_codemeter_led(int state);
 
 
