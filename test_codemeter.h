@@ -22,6 +22,7 @@ extern "C" {
 unsigned int get_codemeter_sn();
 void set_codemeter_led(int state);
 long read_codemeter_counter(int product_code);
+int descrease_codemeter_unitcounter(int product_code, int decrement);
 
 
 #if defined(c_plusplus) || defined(__cplusplus)

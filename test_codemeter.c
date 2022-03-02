@@ -82,6 +82,56 @@ long read_codemeter_counter(int product_code) {
     return ulUnitCounter;
 }
 
+
+
+int descrease_codemeter_unitcounter(int product_code, int decrement) {
+    int res;
+    unsigned int cbDest;
+    unsigned char pbDest[] = {
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+    unsigned char initkey[] = {
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+    CMCRYPT2 cmCrypt;
+    HCMSysEntry hsEntry;
+    CMACCESS2 cmAcc;
+    memset(&cmAcc, 0, sizeof(CMACCESS2));
+    cmAcc.mflCtrl |= CM_ACCESS_USERLIMIT;
+    cmAcc.mulFirmCode = FIRM_CODE;
+    cmAcc.mulProductCode = product_code;
+    hsEntry = CmAccess2(CM_ACCESS_LOCAL, &cmAcc);
+
+    if (hsEntry) {
+        memset(&cmCrypt, 0, sizeof(CMCRYPT2));
+        cmCrypt.mcmBaseCrypt.mflCtrl |= CM_CRYPT_FIRMKEY;
+        cmCrypt.mcmBaseCrypt.mflCtrl |= CM_CRYPT_AES;
+        cmCrypt.mcmBaseCrypt.mulEncryptionCodeOptions |= 1;
+        cmCrypt.mcmBaseCrypt.mulEncryptionCodeOptions |= CM_CRYPT_UCCHECK;
+        cmCrypt.mcmBaseCrypt.mulEncryptionCodeOptions |= CM_CRYPT_ATCHECK;
+        cmCrypt.mcmBaseCrypt.mulEncryptionCodeOptions |= CM_CRYPT_ETCHECK;
+        cmCrypt.mcmBaseCrypt.mulEncryptionCodeOptions |= CM_CRYPT_SAUNLIMITED;
+        memcpy(cmCrypt.mabInitKey, initkey, CM_BLOCK_SIZE);
+
+        cbDest = 16;
+        res = CmCrypt2(hsEntry, CM_CRYPT_DIRECT_ENC, &cmCrypt, pbDest, cbDest);
+        CmRelease(hsEntry);
+
+        if(0 != res)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    } else {
+        return -2;
+    }
+}
+
 void set_codemeter_led(int state) {
     unsigned int iFirmCode, iProductCode, res, flags;
     HCMSysEntry hcmEntry;

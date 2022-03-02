@@ -10,6 +10,11 @@ void test_codemeter(int state) {
     printf("codemeter sn: %d\n", sn);
     long counter = read_codemeter_counter(13);
     printf("codemeter product counter: %ld\n", counter);
+
+    descrease_codemeter_unitcounter(13, 1);
+
+    counter = read_codemeter_counter(13);
+    printf("decrease counter: %ld\n", counter);
 }
 
 int main(int argc, char** argv) {
