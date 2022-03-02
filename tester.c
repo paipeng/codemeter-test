@@ -4,8 +4,8 @@
 #include "test_codemeter.h"
 
 
-void test_codemeter() {
-    set_codemeter_led(LED_RED);
+void test_codemeter(int state) {
+    set_codemeter_led(state);
 }
 
 int main(int argc, char** argv) {
@@ -19,5 +19,6 @@ int main(int argc, char** argv) {
 
     }
     printf("hello world %d+%d=%d\n", a, b, add(a,b));
+    test_codemeter(add(a,b)%4);
     return 0;
 }
