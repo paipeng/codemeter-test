@@ -16,6 +16,6 @@ main:all
 
 so:	$(OBJ)
 	$(CC) -fPIC $^ -shared -o $(TARGET) $(CFLAGS) $(INC_LIB_PATH) $(LIBS)
-	#$(CC) -fPIC test.c -o $(TARGET) -shared
+	rm -f *.o
 exe:
 	$(CC) tester.c -ltest -L./ -o test_so
