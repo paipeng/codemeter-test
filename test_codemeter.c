@@ -21,11 +21,24 @@ HCMSysEntry openCMSysEntry() {
     return hcmse;
 }
 
+HCMSysEntry openCodeMeterEntry(int firm_code, int product_code) {                                                                     
+    HCMSysEntry hcmse;
+    CMACCESS2 cmAcc;
+    memset(&cmAcc, 0, sizeof(CMACCESS2));
+    strncpy(cmAcc.mcmCredential.mszUsername, "paipeng", sizeof(cmAcc.mcmCredential.mszUsername));
+    cmAcc.mflCtrl = CM_ACCESS_NOUSERLIMIT;
+    cmAcc.mulFirmCode = firm_code;
+    cmAcc.mulProductCode = product_code;
+    hcmse = CmAccess2(CM_ACCESS_LOCAL, &cmAcc);
+    return hcmse;
+}
+
 unsigned int get_codemeter_sn() {
     HCMSysEntry hcmse = openCMSysEntry();
     CMBOXINFO cmBoxInfo;
     int res;
     char sn[11];
+    int serial_number = 0;
 
     memset(&cmBoxInfo, 0, sizeof(CMBOXINFO));
     res = CmGetInfo(hcmse, CM_GEI_BOXINFO, &cmBoxInfo, sizeof(cmBoxInfo));
@@ -33,12 +46,40 @@ unsigned int get_codemeter_sn() {
     if(0 != res) {
         if (cmBoxInfo.musBoxMask < 10) {
             snprintf(sn, sizeof(char)*11, "%d%d", cmBoxInfo.musBoxMask, cmBoxInfo.mulSerialNumber);
-            return atoi(sn);
+            serial_number = atoi(sn);
         } else {
-            return cmBoxInfo.mulSerialNumber;
+            serial_number = cmBoxInfo.mulSerialNumber;
         }
     }
-    return 0;
+    CmRelease(hcmse);
+    return serial_number;
+}
+
+long read_codemeter_counter(int product_code) {
+    HCMSysEntry hcmse;
+    CMBOXENTRY cmboxentry;
+    CMACCESS2 cmacc;
+    long ulUnitCounter = -3;
+    printf("open entry product_code: %d\n", product_code);
+
+    hcmse = openCodeMeterEntry(FIRM_CODE, product_code);  
+    
+    if (hcmse) {
+        memset(&cmboxentry, 0, sizeof(CMBOXENTRY));
+        if (0 == CmGetInfo(hcmse, CM_GEI_ENTRYINFO, &cmboxentry, sizeof(CMBOXENTRY))) {
+            printf("Error %d in CmGetInfo(CM_GEI_ENTRYINFO)", CmGetLastErrorCode());
+            ulUnitCounter = -1;
+        } else {
+            if ((cmboxentry.mflSetPios & CM_GF_UNITCOUNTER) == CM_GF_UNITCOUNTER) {
+                ulUnitCounter = cmboxentry.mulUnitCounter;
+            }
+        }
+        CmRelease(hcmse);
+    } else {
+        printf("Error %d in CmAccess().\n", CmGetLastErrorCode());
+        ulUnitCounter = -2;
+    }
+    return ulUnitCounter;
 }
 
 void set_codemeter_led(int state) {

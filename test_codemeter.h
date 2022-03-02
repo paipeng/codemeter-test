@@ -20,7 +20,8 @@ extern "C" {
 #endif
 
 unsigned int get_codemeter_sn();
-EXPORT void set_codemeter_led(int state);
+void set_codemeter_led(int state);
+long read_codemeter_counter(int product_code);
 
 
 #if defined(c_plusplus) || defined(__cplusplus)
